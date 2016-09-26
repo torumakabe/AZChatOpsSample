@@ -96,7 +96,7 @@
         "description": "Your Azure AD client secret or service principal password (used for authentication)."
       }
     },
-    "AUTOMATION_AUTOMATION_RESOURCE_GROUP" : {
+    "AUTOMATION_RESOURCE_GROUP" : {
       "type": "string",
       "metadata": {
         "description": "The name of the Resource Group in which your Automation account lives."
