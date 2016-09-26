@@ -54,7 +54,7 @@ const executeRunbook = (channel, requestedBy, name, params) => {
   
   return queue.send({ posted: new Date(), jobId: jobId, channel: channel, requestedBy: requestedBy, runbook: name })
     .then(() => {
-      return armClient.provider(nconf.get('RESOURCE_GROUP'), 'Microsoft.Automation')
+      return armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
         .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request);
     });
 };
@@ -96,7 +96,7 @@ app.post('/execute', (req, res) => {
   executeRunbook(`#${req.body.channel_name}`, req.body.user_name, runbook, params)
     .then((data) => {
       const subscriptionsUrl = 'https://portal.azure.com/#resource/subscriptions';
-      const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${runbook}`;
+      const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('AUTOMATION_RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${runbook}`;
       
       res.send({
         response_type: 'in_channel',
