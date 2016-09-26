@@ -16,6 +16,7 @@
     },
     "siteLocation": {
       "type": "string",
+      "defaultValue": "japaneast",
       "metadata": {
         "description": "Name of the Location (eg: West Europe)"
       }
@@ -37,18 +38,6 @@
       "type": "string",
       "metadata": {
         "description": "The instance size of the App Service."
-      }
-    },
-    "workerSize": {
-      "type": "string",
-      "allowedValues": [
-          "0",
-          "1",
-          "2"
-      ],
-      "defaultValue": "0",
-      "metadata": {
-        "description": "The VM size (Small/Medium/Large)"
       }
     },
     "storageName":{
@@ -107,7 +96,7 @@
         "description": "Your Azure AD client secret or service principal password (used for authentication)."
       }
     },
-    "RESOURCE_GROUP" : {
+    "AUTOMATION_RESOURCE_GROUP" : {
       "type": "string",
       "metadata": {
         "description": "The name of the Resource Group in which your Automation account lives."
