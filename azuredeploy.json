@@ -16,10 +16,7 @@
     },
     "siteLocation": {
       "type": "string",
-      "allowedValues": [
-          "japaneast",
-          "japanwest"
-      ],
+      "defaultValue": "japaneast",
       "metadata": {
         "description": "Name of the Location (eg: West Europe)"
       }
@@ -41,18 +38,6 @@
       "type": "string",
       "metadata": {
         "description": "The instance size of the App Service."
-      }
-    },
-    "workerSize": {
-      "type": "string",
-      "allowedValues": [
-          "0",
-          "1",
-          "2"
-      ],
-      "defaultValue": "0",
-      "metadata": {
-        "description": "The VM size (Small/Medium/Large)"
       }
     },
     "storageName":{
@@ -111,7 +96,7 @@
         "description": "Your Azure AD client secret or service principal password (used for authentication)."
       }
     },
-    "RESOURCE_GROUP" : {
+    "AUTOMATION_RESOURCE_GROUP" : {
       "type": "string",
       "metadata": {
         "description": "The name of the Resource Group in which your Automation account lives."
@@ -192,7 +177,7 @@
             { "Name": "TENANT_ID", "Value": "[parameters('TENANT_ID')]" },
             { "Name": "CLIENT_ID", "Value": "[parameters('CLIENT_ID')]" },
             { "Name": "CLIENT_SECRET", "Value": "[parameters('CLIENT_SECRET')]" },
-            { "Name": "RESOURCE_GROUP", "Value": "[parameters('RESOURCE_GROUP')]" },
+            { "Name": "AUTOMATION_RESOURCE_GROUP", "Value": "[parameters('AUTOMATION_RESOURCE_GROUP')]" },
             { "Name": "AUTOMATION_ACCOUNT", "Value": "[parameters('AUTOMATION_ACCOUNT')]" },
             { "Name": "STORAGE_ACCOUNT", "Value": "[parameters('storageName')]" },
             { "Name": "STORAGE_ACCOUNT_KEY", "Value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2015-06-15').key1]" },

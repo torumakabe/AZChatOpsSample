@@ -42,7 +42,7 @@ const worker = (message, cb) => {
   
   logger.info('Processing job:', JSON.stringify(job, null, 2));
   
-  armClient.provider(nconf.get('RESOURCE_GROUP'), 'Microsoft.Automation')
+  armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
     .get(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${job.jobId}`, { 'api-version': '2015-10-31' })
     .then((res) => {
       return {
@@ -108,7 +108,7 @@ const postToSlack = (job) => {
   }
 
   const subscriptionsUrl = 'https://portal.azure.com/#resource/subscriptions';
-  const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${job.runbook}`;
+  const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('AUTOMATION_RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${job.runbook}`;
   
   var msg = {
     attachments: [{
