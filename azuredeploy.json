@@ -16,6 +16,10 @@
     },
     "siteLocation": {
       "type": "string",
+      "allowedValues": [
+          "japaneast",
+          "japanwest"
+      ],
       "metadata": {
         "description": "Name of the Location (eg: West Europe)"
       }
