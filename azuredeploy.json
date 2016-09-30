@@ -2,7 +2,7 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "siteName": {
+    "functionAppName": {
       "type": "string",
       "metadata": {
         "description": "Name of Azure Web App"
@@ -103,7 +103,6 @@
     }
   },
   "variables": {
-    "deploySiteName": "[parameters('siteName')]"
   },
   "resources": [
     {
@@ -128,7 +127,7 @@
     },
     {
       "apiVersion": "2015-08-01",
-      "name": "[variables('deploySiteName')]",
+      "name": "[parameters('functionAppName')]",
       "type": "Microsoft.Web/sites",
       "location": "[parameters('siteLocation')]",
       "kind": "functionapp",
@@ -137,7 +136,7 @@
         "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]"
       ],
       "properties": {
-        "name": "[variables('deploySiteName')]",
+        "name": "[parameters('functionAppName')]",
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
       },
       "resources": [
@@ -146,7 +145,7 @@
           "name": "web",
           "type": "sourcecontrols",
           "dependsOn": [
-            "[resourceId('Microsoft.Web/Sites/', variables('deploySiteName'))]"
+            "[resourceId('Microsoft.Web/Sites/', parameters('functionAppName'))]"
           ],
           "properties": {
             "RepoUrl": "[parameters('repoURL')]",
@@ -159,7 +158,7 @@
           "name": "appsettings",
           "type": "config",
           "dependsOn": [
-            "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+            "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]",
             "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]"
           ],
           "properties": {
@@ -183,7 +182,7 @@
   "outputs": {
      "siteUri": {
        "type": "string",
-       "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', variables('deploySiteName'))).hostNames[0])]"
+       "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', parameters('functionAppName'))).hostNames[0])]"
      }
   }
 }
