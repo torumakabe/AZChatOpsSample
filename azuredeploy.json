@@ -138,27 +138,7 @@
       ],
       "properties": {
         "name": "[variables('deploySiteName')]",
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
-        "siteConfig": {
-          "phpVersion": "off",
-          "alwaysOn": true,
-          "httpLoggingEnabled": true,
-          "logsDirectorySizeLimit": 40,
-          "appSettings": [
-            { "Name": "SUBSCRIPTION_ID", "Value": "[parameters('SUBSCRIPTION_ID')]" },
-            { "Name": "TENANT_ID", "Value": "[parameters('TENANT_ID')]" },
-            { "Name": "CLIENT_ID", "Value": "[parameters('CLIENT_ID')]" },
-            { "Name": "CLIENT_SECRET", "Value": "[parameters('CLIENT_SECRET')]" },
-            { "Name": "AUTOMATION_RESOURCE_GROUP", "Value": "[parameters('AUTOMATION_RESOURCE_GROUP')]" },
-            { "Name": "AUTOMATION_ACCOUNT", "Value": "[parameters('AUTOMATION_ACCOUNT')]" },
-            { "Name": "STORAGE_ACCOUNT", "Value": "[parameters('storageName')]" },
-            { "Name": "STORAGE_ACCOUNT_KEY", "Value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2015-06-15').key1]" },
-            { "Name": "SLACK_CHANNEL", "Value": "[parameters('SLACK_CHANNEL')]" },
-            { "Name": "SLACK_INCOMING_WEBHOOK_URL", "Value": "[parameters('SLACK_INCOMING_WEBHOOK_URL')]" },
-            { "Name": "WEBSITE_NODE_DEFAULT_VERSION", "Value": "6.5.0" },
-            { "Name": "FUNCTIONS_EXTENSION_VERSION", "Value": "latest" }
-          ]
-        }
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
       },
       "resources": [
         {
@@ -173,7 +153,30 @@
             "branch": "[parameters('branch')]",
             "IsManualIntegration": true
           }
-        }
+        },
+        {
+          "apiVersion": "2016-03-01",
+          "name": "appsettings",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+            "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]"
+          ],
+          "properties": {
+            "SUBSCRIPTION_ID": "[parameters('SUBSCRIPTION_ID')]",
+            "TENANT_ID": "[parameters('TENANT_ID')]",
+            "CLIENT_ID": "[parameters('CLIENT_ID')]",
+            "CLIENT_SECRET": "[parameters('CLIENT_SECRET')]",
+            "AUTOMATION_RESOURCE_GROUP": "[parameters('AUTOMATION_RESOURCE_GROUP')]",
+            "AUTOMATION_ACCOUNT": "[parameters('AUTOMATION_ACCOUNT')]",
+            "STORAGE_ACCOUNT": "[parameters('storageName')]",
+            "STORAGE_ACCOUNT_KEY": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2015-06-15').key1]",
+            "SLACK_CHANNEL": "[parameters('SLACK_CHANNEL')]",
+            "SLACK_INCOMING_WEBHOOK_URL": "[parameters('SLACK_INCOMING_WEBHOOK_URL')]",
+            "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
+            "FUNCTIONS_EXTENSION_VERSION": "latest"
+          }
+         }
       ]
     }
   ],
