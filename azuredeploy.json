@@ -116,7 +116,7 @@
       }
     },
     {
-      "apiVersion": "2015-08-01",
+      "apiVersion": "2015-04-01",
       "name": "[parameters('appServicePlanName')]",
       "type": "Microsoft.Web/serverfarms",
       "location": "[parameters('siteLocation')]",
@@ -133,11 +133,12 @@
       "location": "[parameters('siteLocation')]",
       "kind": "functionapp",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]"
       ],
       "properties": {
         "name": "[variables('deploySiteName')]",
-        "serverFarmId": "[parameters('appServicePlanName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
         "siteConfig": {
           "phpVersion": "off",
           "alwaysOn": true,
@@ -152,7 +153,6 @@
             { "Name": "AUTOMATION_ACCOUNT", "Value": "[parameters('AUTOMATION_ACCOUNT')]" },
             { "Name": "STORAGE_ACCOUNT", "Value": "[parameters('storageName')]" },
             { "Name": "STORAGE_ACCOUNT_KEY", "Value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2015-06-15').key1]" },
-            { "Name": "SLACK_TOKEN", "Value": "[parameters('SLACK_TOKEN')]" },
             { "Name": "SLACK_CHANNEL", "Value": "[parameters('SLACK_CHANNEL')]" },
             { "Name": "SLACK_INCOMING_WEBHOOK_URL", "Value": "[parameters('SLACK_INCOMING_WEBHOOK_URL')]" },
             { "Name": "WEBSITE_NODE_DEFAULT_VERSION", "Value": "6.5.0" },
@@ -162,7 +162,7 @@
       },
       "resources": [
         {
-          "apiVersion": "2015-08-01",
+          "apiVersion": "2016-03-01",
           "name": "web",
           "type": "sourcecontrols",
           "dependsOn": [
