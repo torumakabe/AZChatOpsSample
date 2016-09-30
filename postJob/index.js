@@ -54,6 +54,7 @@ const executeRunbook = (channel, requestedBy, name, params) => {
 //Main flow
 module.exports = function (context, data) {
 
+  context.log('receive a request.');
   // Initialize configuration.
   nconf.argv()
     .env()
