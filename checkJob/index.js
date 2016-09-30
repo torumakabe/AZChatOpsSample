@@ -4,19 +4,9 @@ const bodyParser = require('body-parser');
 const ArmClient = require('armclient');
 const Slack = require('node-slackr');
 
-const Queue = require('./lib/queue');
+const Queue = require('../lib/queue');
 
-const logger = require('./lib/logger');
-logger.info('Starting azure-runslash worker process.');
-
-// Initialize configuration.
-nconf.argv()
-  .env()
-  .file({ file: './config.json' })
-  .defaults({
-    NODE_ENV: 'development',
-    PORT: 3500
-  });
+//const logger = require('../lib/logger');
 
 // ARM client.
 const armClient = ArmClient({ 
@@ -40,7 +30,7 @@ const queue = Queue(nconf.get('STORAGE_ACCOUNT'), nconf.get('STORAGE_ACCOUNT_KEY
 const worker = (message, cb) => {
   var job = JSON.parse(message.messagetext);
   
-  logger.info('Processing job:', JSON.stringify(job, null, 2));
+//  logger.info('Processing job:', JSON.stringify(job, null, 2));
   
   armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
     .get(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${job.jobId}`, { 'api-version': '2015-10-31' })
@@ -76,7 +66,7 @@ const worker = (message, cb) => {
         .catch(cb);
     })
     .catch((err) => {
-      logger.error(err);
+//      logger.error(err);
       cb();
     });
 }; 
@@ -127,20 +117,37 @@ const postToSlack = (job) => {
 
   slack.notify(msg, (err, result) => {
     if (err) {
-      logger.error('Error posting to Slack:', err);
+//      logger.error('Error posting to Slack:', err);
     }
 
-    logger.debug('Update posted to Slack.');
+//    logger.debug('Update posted to Slack.');
   });
 };
- 
-// Start listening.
-queue.create()
-  .then(() => {
-    logger.debug(`Listening for messages in ${nconf.get('STORAGE_ACCOUNT')}/azure-runslash-jobs.`);
-    return queue.process(worker);
-  })
-  .catch((err) => { 
-    logger.error(err);
-    throw err;
-  });
+
+
+//Main flow
+module.exports = (context, myTimer) => {
+//  logger.info('Starting azure-runslash checkjob function.');
+
+  // Initialize configuration.
+  nconf.argv()
+    .env()
+    .file({ file: '../config.json' })
+    .defaults({
+      NODE_ENV: 'development',
+      PORT: 3500
+    });
+  
+  // Start listening.
+  queue.create()
+    .then(() => {
+//      logger.debug(`Listening for messages in ${nconf.get('STORAGE_ACCOUNT')}/azure-runslash-jobs.`);
+      return queue.process(worker);
+    })
+    .catch((err) => { 
+//      logger.error(err);
+      throw err;
+    });
+  context.log('Check done.');
+  context.done();
+};

@@ -21,25 +21,6 @@
         "description": "Name of the Location (eg: West Europe)"
       }
     },
-    "sku": {
-      "type": "string",
-      "defaultValue": "Standard",
-      "allowedValues": [
-          "Basic",
-          "Standard",
-          "Premium"
-      ],
-      "metadata": {
-          "description": "The pricing tier for the App Service plan."
-      }
-    },
-    "svcPlanSize": {
-      "defaultValue": "S1",
-      "type": "string",
-      "metadata": {
-        "description": "The instance size of the App Service."
-      }
-    },
     "storageName":{
       "type":"string",
       "metadata": {
@@ -147,13 +128,8 @@
       "location": "[parameters('siteLocation')]",
       "properties": {
         "name": "[parameters('appServicePlanName')]",
-        "numberOfWorkers": 1,
-        "workerSize": 0
-      },    
-      "sku": {
-        "name": "[parameters('svcPlanSize')]",
-        "tier": "[parameters('sku')]",
-        "capacity": 1
+        "computeMode": "Dynamic",
+        "sku": "Dynamic"
       }
     },
     {
@@ -161,6 +137,7 @@
       "name": "[variables('deploySiteName')]",
       "type": "Microsoft.Web/sites",
       "location": "[parameters('siteLocation')]",
+      "kind": "functionapp",
       "dependsOn": [
         "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
       ],
@@ -184,7 +161,8 @@
             { "Name": "SLACK_TOKEN", "Value": "[parameters('SLACK_TOKEN')]" },
             { "Name": "SLACK_CHANNEL", "Value": "[parameters('SLACK_CHANNEL')]" },
             { "Name": "SLACK_INCOMING_WEBHOOK_URL", "Value": "[parameters('SLACK_INCOMING_WEBHOOK_URL')]" },
-            { "Name": "WEBSITE_NODE_DEFAULT_VERSION", "Value": "5.3.0" }
+            { "Name": "WEBSITE_NODE_DEFAULT_VERSION", "Value": "6.5.0" },
+            { "Name": "FUNCTIONS_EXTENSION_VERSION", "Value": "latest" }
           ]
         }
       },

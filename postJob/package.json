@@ -1,16 +1,16 @@
 {
-  "name": "azure-runslash",
+  "name": "azure-runslash-postjob",
   "version": "1.0.0",
-  "description": "A chatops tool that allows you to run Azure Automation Runbooks from Slack and get notified of the progress.",
-  "main": "server.js",
+  "description": "A chatops tool that allows you to run Azure Automation Runbooks from Slac.",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
-    "node": "5.3.0"
+    "node": "6.5.0"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "armclient": "^1.1.0",
     "async": "^1.5.2",
