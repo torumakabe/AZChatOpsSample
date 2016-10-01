@@ -162,6 +162,8 @@
             "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]"
           ],
           "properties": {
+            "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2015-05-01-preview').key1,';')]", 
+            "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2015-05-01-preview').key1,';')]",
             "SUBSCRIPTION_ID": "[parameters('SUBSCRIPTION_ID')]",
             "TENANT_ID": "[parameters('TENANT_ID')]",
             "CLIENT_ID": "[parameters('CLIENT_ID')]",

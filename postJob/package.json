@@ -1,7 +1,7 @@
 {
   "name": "azure-runslash-postjob",
   "version": "1.0.0",
-  "description": "A chatops tool that allows you to run Azure Automation Runbooks from Slac.",
+  "description": "A chatops tool that allows you to run Azure Automation Runbooks from Slack.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
