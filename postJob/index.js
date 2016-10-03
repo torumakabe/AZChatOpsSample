@@ -10,6 +10,11 @@ const qs = require('querystring');
 const Queue = require('../lib/queue');
 //const logger = require('../lib/logger');
 
+// Initialize configuration.
+nconf.argv()
+  .env()
+  .file({ file: '../config.json' });
+
 // ARM client.
 const armClient = ArmClient({ 
   subscriptionId: nconf.get('SUBSCRIPTION_ID'),
@@ -55,10 +60,6 @@ const executeRunbook = (channel, requestedBy, name, params) => {
 module.exports = function (context, data) {
 
   context.log('receive a request.');
-  // Initialize configuration.
-  nconf.argv()
-    .env()
-    .file({ file: '../config.json' });
  
   const body = qs.parse(data);
 
