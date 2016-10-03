@@ -86,6 +86,8 @@ module.exports = function (context, data) {
     .then((data) => {
       const subscriptionsUrl = 'https://portal.azure.com/#resource/subscriptions';
       const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('AUTOMATION_RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${runbook}`;
+
+      context.log('check return value after posting runbook: ' + data);
       
       context.res = {
         response_type: 'in_channel',
