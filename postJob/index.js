@@ -63,8 +63,6 @@ module.exports = function (context, data) {
  
   const body = qs.parse(data);
 
-  context.log(body);  
-
   // Runbook name is required.
   if (!body.text || body.text.length === 0) {
     context.res = {
@@ -104,6 +102,9 @@ module.exports = function (context, data) {
           ],
         }]
       };
+
+      context.log('In executeRunbook: ' + context.res);
+
     })
     .catch((err) => {
       if (err) {
@@ -121,7 +122,7 @@ module.exports = function (context, data) {
       };
     });
 
-  context.log(context);
+  context.log('Before context.done: ' + context.res);
   context.done();
 
 };
