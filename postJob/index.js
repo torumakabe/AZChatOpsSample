@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 //const morgan = require('morgan');
 //const Express = require('express');
 const ArmClient = require('armclient');
-const qs = require('quertstring');
+const qs = require('querystring');
 
 const Queue = require('../lib/queue');
 //const logger = require('../lib/logger');
