@@ -121,6 +121,7 @@ module.exports = function (context, data) {
       };
     });
 
+  context.log(context);
   context.done();
 
 };
