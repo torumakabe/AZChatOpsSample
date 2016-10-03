@@ -88,3 +88,6 @@ Temporary Items
 
 # working directories
 work
+
+# cred parameters
+azuredeploy.parameters.json
