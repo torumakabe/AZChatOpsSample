@@ -1,14 +1,10 @@
-//const path = require('path');
 const nconf = require('nconf');
-//const bodyParser = require('body-parser');
 const uuid = require('node-uuid');
-//const morgan = require('morgan');
-//const Express = require('express');
 const ArmClient = require('armclient');
 const qs = require('querystring');
+const Promise = require('bluebird');
 
 const Queue = require('../lib/queue');
-//const logger = require('../lib/logger');
 
 // Initialize configuration.
 nconf.argv()
@@ -49,10 +45,13 @@ const executeRunbook = (channel, requestedBy, name, params) => {
     tags: {}
   };
   
-  return queue.send({ posted: new Date(), jobId: jobId, channel: channel, requestedBy: requestedBy, runbook: name })
+  queue.send({ posted: new Date(), jobId: jobId, channel: channel, requestedBy: requestedBy, runbook: name })
     .then(() => {
-      return armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
-        .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request);
+      armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
+        .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request)
+    .then((data) => {
+      return data;
+      });
     });
 };
 
@@ -73,7 +72,7 @@ module.exports = function (context, data) {
         text: `Unable to execute Azure Automation Runbook: The runbook name is required.`
       }]
     };
-    context.done();
+//    context.done();
   }
   
   // Collect information.
