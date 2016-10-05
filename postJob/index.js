@@ -50,8 +50,8 @@ const executeRunbook = (channel, requestedBy, name, params) => {
       .then(() => {
         return armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
           .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request)})
-      .then((data) => {
-        resolve(data);
+      .then((rbdata) => {
+        resolve(rbdata);
         })
       .catch((err) => {
         reject(err);
@@ -65,6 +65,7 @@ module.exports = function (context, data) {
   context.log('receive a request.');
  
   const body = qs.parse(data);
+  context.log('Response boby is ' + body)
 
   // Runbook name is required.
   if (!body.text || body.text.length === 0) {
@@ -86,11 +87,11 @@ module.exports = function (context, data) {
   
   // Execute the runbook.
   executeRunbook(`#${body.channel_name}`, body.user_name, runbook, params)
-    .then((data) => {
+    .then((rbdata) => {
       const subscriptionsUrl = 'https://portal.azure.com/#resource/subscriptions';
       const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('AUTOMATION_RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${runbook}`;
 
-      context.log('check return value after posting runbook: ' + JSON.stringify(data));
+      context.log('check return value after posting runbook: ' + JSON.stringify(rbdata));
       
       context.res = {
         response_type: 'in_channel',
@@ -102,7 +103,7 @@ module.exports = function (context, data) {
           fields: [
             { 'title': 'Automation Account', 'value': nconf.get('AUTOMATION_ACCOUNT'), 'short': true },
             { 'title': 'Runbook', 'value': runbook, 'short': true },
-            { 'title': 'Job ID', 'value': data.body.properties.jobId, 'short': true },
+            { 'title': 'Job ID', 'value': rbdata.body.properties.jobId, 'short': true },
             { 'title': 'Parameters', 'value': `"${params.join('", "')}"`, 'short': true },
           ],
         }]
