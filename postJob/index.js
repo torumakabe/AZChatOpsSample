@@ -67,7 +67,6 @@ module.exports = function (context, data) {
   context.log('receive a request.');
  
   const body = qs.parse(data);
-  context.log('Response boby is ' + body)
 
   // Runbook name is required.
   if (!body.text || body.text.length === 0) {
@@ -117,7 +116,7 @@ module.exports = function (context, data) {
     .catch((err) => {
       if (err) {
 //        logger.error(err);  
-          context.log(err);
+          context.log('Caught an err in executeRunbook: ' + err);
       }
       
       context.res = {
