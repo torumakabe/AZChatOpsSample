@@ -2,7 +2,6 @@ const nconf = require('nconf');
 const uuid = require('node-uuid');
 const ArmClient = require('armclient');
 const qs = require('querystring');
-const Promise = require('bluebird');
 
 const Queue = require('../lib/queue');
 
@@ -45,9 +44,9 @@ const executeRunbook = (channel, requestedBy, name, params) => {
     tags: {}
   };
   
-  queue.send({ posted: new Date(), jobId: jobId, channel: channel, requestedBy: requestedBy, runbook: name })
+  return queue.send({ posted: new Date(), jobId: jobId, channel: channel, requestedBy: requestedBy, runbook: name })
     .then(() => {
-      armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
+      return armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
         .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request)
     .then((data) => {
       return data;
