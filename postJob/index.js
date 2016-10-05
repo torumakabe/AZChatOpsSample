@@ -51,9 +51,11 @@ const executeRunbook = (channel, requestedBy, name, params) => {
         return armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
           .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request)})
       .then((rbdata) => {
+        context.log('resolved: ' + rbdata);
         resolve(rbdata);
         })
       .catch((err) => {
+        context.log('rejected: ' + err);
         reject(err);
       });
   });
