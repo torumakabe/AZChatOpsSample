@@ -47,10 +47,12 @@ const executeRunbook = (channel, requestedBy, name, params) => {
   return queue.send({ posted: new Date(), jobId: jobId, channel: channel, requestedBy: requestedBy, runbook: name })
     .then(() => {
       return armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
-        .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request)
+        .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request)})
     .then((data) => {
       return data;
-      });
+      })
+    .catch((err) => {
+      return err;
     });
 };
 
