@@ -9,8 +9,6 @@ const qs = require('querystring');
 //Main flow
 module.exports = function (context, data) {
 
-  context.log('receive a request.');
-
   nconf.argv().env();
 
   const armClient = ArmClient({ 

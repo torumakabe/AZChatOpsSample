@@ -13,16 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "armclient": "^1.1.0",
-    "async": "^1.5.2",
     "azure-storage": "^0.8.0",
-    "bluebird": "^3.2.2",
-    "body-parser": "^1.14.2",
-    "express": "^4.13.4",
-    "morgan": "^1.6.1",
     "nconf": "^0.8.4",
-    "node-slackr": "^0.1.2",
-    "node-uuid": "^1.4.7",
-    "request": "^2.69.0",
-    "winston": "^2.1.1"
+    "node-slackr": "^0.1.2"
   }
 }
