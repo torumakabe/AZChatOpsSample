@@ -7,7 +7,7 @@ const uuid = require('node-uuid');
 const qs = require('querystring');
 
 //Main flow
-module.exports = function (context, data) {
+module.exports = (context, data) => {
 
   nconf.argv().env();
 
