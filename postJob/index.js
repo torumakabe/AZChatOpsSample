@@ -51,6 +51,7 @@ module.exports = function (context, data) {
     // Collect information.
     const input = body.text.trim().split(' ');
     const runbook = input[0];
+    const name = runbook;
     const params = input.splice(1);
     
     const channel = `#${body.channel_name}`;
@@ -60,7 +61,7 @@ module.exports = function (context, data) {
     const request = {
       properties: {
         runbook: {
-          runbook
+          name
         },
         parameters: {
           context: JSON.stringify(params),
@@ -71,7 +72,7 @@ module.exports = function (context, data) {
       tags: {}
     };
 
-    return queue.send({ posted: new Date(), jobId: jobId, channel: channel, requestedBy: requestedBy, runbook: runbook })
+    return queue.send({ posted: new Date(), jobId: jobId, channel: channel, requestedBy: requestedBy, runbook: name })
       .then(() => {
         return armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
           .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request)})
@@ -98,7 +99,7 @@ module.exports = function (context, data) {
         };
         })
       .catch((err) => {
-        context.log('Caught a error: ' + err);
+        context.log('Caught a error: ' + JSON.stringify(err));
         context.res = {
           response_type: 'in_channel',
           attachments: [{
