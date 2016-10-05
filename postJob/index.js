@@ -1,24 +1,15 @@
+const ArmClient = require('armclient');
+const async = require('async');
+const azureStorage = require('azure-storage');
+const Promise = require('bluebird');
 const nconf = require('nconf');
 const uuid = require('node-uuid');
-const ArmClient = require('armclient');
 const qs = require('querystring');
-
-const Queue = require('../lib/queue');
 
 // Initialize configuration.
 nconf.argv()
   .env()
   .file({ file: '../config.json' });
-
-// ARM client.
-const armClient = ArmClient({ 
-  subscriptionId: nconf.get('SUBSCRIPTION_ID'),
-  auth: ArmClient.clientCredentials({
-    tenantId: nconf.get('TENANT_ID'), 
-    clientId: nconf.get('CLIENT_ID'),
-    clientSecret: nconf.get('CLIENT_SECRET')
-  })
-});
 
 // Runbook queue.
 const queue = Queue(nconf.get('STORAGE_ACCOUNT'), nconf.get('STORAGE_ACCOUNT_KEY'), 'azure-runslash-jobs');
@@ -50,8 +41,7 @@ module.exports = function (context, data) {
 
     // Collect information.
     const input = body.text.trim().split(' ');
-    const runbook = input[0];
-    const name = runbook;
+    const name = input[0];
     const params = input.splice(1);
     
     const channel = `#${body.channel_name}`;
@@ -78,7 +68,7 @@ module.exports = function (context, data) {
           .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request)})
       .then((rbdata) => {
         const subscriptionsUrl = 'https://portal.azure.com/#resource/subscriptions';
-        const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('AUTOMATION_RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${runbook}`;
+        const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('AUTOMATION_RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${name}`;
 
         context.log('check return value after posting runbook: ' + JSON.stringify(rbdata));
         
@@ -87,11 +77,11 @@ module.exports = function (context, data) {
           attachments: [{
             color: '#00BCF2',
             mrkdwn_in: ['text'],
-            fallback: `Azure Automation Runbook ${runbook} has been queued.`,
-            text: `Azure Automation Runbook *${runbook}* has been queued (<${runbookUrl}|Open Runbook>).`,
+            fallback: `Azure Automation Runbook ${name} has been queued.`,
+            text: `Azure Automation Runbook *${name}* has been queued (<${runbookUrl}|Open Runbook>).`,
             fields: [
               { 'title': 'Automation Account', 'value': nconf.get('AUTOMATION_ACCOUNT'), 'short': true },
-              { 'title': 'Runbook', 'value': runbook, 'short': true },
+              { 'title': 'Runbook', 'value': name, 'short': true },
               { 'title': 'Job ID', 'value': jobId, 'short': true },
               { 'title': 'Parameters', 'value': `"${params.join('", "')}"`, 'short': true },
             ],
@@ -114,3 +104,132 @@ module.exports = function (context, data) {
   context.done();
 
 };
+
+
+//Helper functions
+const Queue = (accountName, accountKey, queueName) => {
+  
+  const queueService = azureStorage.createQueueService(accountName, accountKey);
+  
+  const client = {
+    create: () => {
+      return new Promise((resolve, reject) => {
+        try {
+          queueService.createQueueIfNotExists(queueName, (err, res, response) => {
+            if (err) {
+              return reject(err);
+            }
+            return resolve();
+          });
+        } catch (e) {
+          return reject(e);
+        }
+      });
+    },
+    
+    send: (msg) => {   
+      return new Promise((resolve, reject) => {
+        try { 
+          logger.debug('Sending message:', msg);
+          
+          queueService.createMessage(queueName, JSON.stringify(msg, null, 2), { messagettl: 240 * 60 }, (err) => {
+            if (err) {
+              return reject(err);
+            }
+            return resolve();
+          });
+        } catch (e) {
+          return reject(e);
+        }
+      });
+    },
+    
+    update: (msg, contents) => {
+      return new Promise((resolve, reject) => {
+        try { 
+          logger.debug('Updating message:', msg);
+          logger.debug(' > Contents:', contents);
+          
+          queueService.updateMessage(queueName, msg.messageid, msg.popreceipt, 5, { messageText: JSON.stringify(contents, null, 2) }, (err, res) => {
+            if (err) {
+              return reject(err);
+            }
+            return resolve();
+          });
+        } catch (e) {
+          return reject(e);
+        }
+      });
+      
+    },
+    
+    delete: (msg) => {   
+      return new Promise((resolve, reject) => {
+        try { 
+          logger.debug('Deleting message:', msg);
+          
+          queueService.deleteMessage(queueName, msg.messageid, msg.popreceipt, (err, res) => {
+            if (err) {
+              return reject(err);
+            }
+            return resolve();
+          });
+        } catch (e) {
+          return reject(e);
+        }
+      });
+    },
+    
+    getMessages: (messageCallback) => {  
+      return new Promise((resolve, reject) => {
+        try { 
+          logger.debug('Getting messages...');
+          
+          queueService.getMessages(queueName, { numOfMessages: 15, visibilityTimeout: 5 }, (err, result, response) => {
+            if (err) {
+              return reject(err);
+            }
+            
+            if (!result || !result.length) {
+              return resolve();
+            }
+            
+            logger.debug('Received:', result);
+            
+            async.each(result, messageCallback, (err) => {
+              if (err) {
+                return reject(err);
+              }
+              
+              return resolve();
+            });
+          });
+        } catch (e) {
+          return reject(e);  
+        }
+      });
+    },
+    
+    process: (messageCallback) => {
+      return new Promise((resolve, reject) => {
+        const processMessages = () => {
+          client.getMessages(messageCallback)
+//            .delay(20 * 1000)
+//            .then(processMessages)
+            .catch(reject);
+        };
+        processMessages();
+      });
+    }
+  };
+  return client;
+};
+
+const armClient = ArmClient({ 
+  subscriptionId: nconf.get('SUBSCRIPTION_ID'),
+  auth: ArmClient.clientCredentials({
+    tenantId: nconf.get('TENANT_ID'), 
+    clientId: nconf.get('CLIENT_ID'),
+    clientSecret: nconf.get('CLIENT_SECRET')
+  })
+});
