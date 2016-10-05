@@ -47,7 +47,7 @@ module.exports = function (context, data) {
     };
 
   } else {   
-    
+
     // Collect information.
     const input = body.text.trim().split(' ');
     const runbook = input[0];
@@ -60,7 +60,7 @@ module.exports = function (context, data) {
     const request = {
       properties: {
         runbook: {
-          name
+          runbook
         },
         parameters: {
           context: JSON.stringify(params),
