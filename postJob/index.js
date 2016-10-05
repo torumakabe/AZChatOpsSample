@@ -85,7 +85,7 @@ module.exports = function (context, data) {
       const subscriptionsUrl = 'https://portal.azure.com/#resource/subscriptions';
       const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('AUTOMATION_RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${runbook}`;
 
-      context.log('check return value after posting runbook: ' + JSON.stringify(data);
+      context.log('check return value after posting runbook: ' + JSON.stringify(data));
       
       context.res = {
         response_type: 'in_channel',
@@ -103,7 +103,7 @@ module.exports = function (context, data) {
         }]
       };
 
-      context.log('In executeRunbook: ' + JSON.stringify(context.res);
+      context.log('In executeRunbook: ' + JSON.stringify(context.res));
 
     })
     .catch((err) => {
