@@ -2,7 +2,6 @@ const nconf = require('nconf');
 const uuid = require('node-uuid');
 const ArmClient = require('armclient');
 const qs = require('querystring');
-const Promise = require('bluebird');
 
 const Queue = require('../lib/queue');
 
@@ -28,39 +27,6 @@ queue.create()
     throw err;
   });
 
-// Helper method to execute a runbook.
-const executeRunbook = (channel, requestedBy, name, params) => {
-  const jobId = uuid.v4();
-  const request = {
-    properties: {
-      runbook: {
-        name
-      },
-      parameters: {
-        context: JSON.stringify(params),
-        MicrosoftApplicationManagementStartedBy: "\"azure-runslash\"",
-        MicrosoftApplicationManagementRequestedBy: `\"${requestedBy}\"`
-      }
-    },
-    tags: {}
-  };
-  
-  return new Promise((resolve, reject) => {
-    return queue.send({ posted: new Date(), jobId: jobId, channel: channel, requestedBy: requestedBy, runbook: name })
-      .then(() => {
-        return armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
-          .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request)})
-      .then((rbdata) => {
-        context.log('resolved: ' + rbdata);
-        resolve(rbdata);
-        })
-      .catch((err) => {
-        context.log('rejected: ' + err);
-        reject(err);
-      });
-  });
-};
-
 //Main flow
 module.exports = function (context, data) {
 
@@ -70,6 +36,7 @@ module.exports = function (context, data) {
 
   // Runbook name is required.
   if (!body.text || body.text.length === 0) {
+
     context.res = {
       response_type: "in_channel",
       attachments: [{
@@ -78,58 +45,71 @@ module.exports = function (context, data) {
         text: `Unable to execute Azure Automation Runbook: The runbook name is required.`
       }]
     };
-//    context.done();
+
+  } else {   
+    
+    // Collect information.
+    const input = body.text.trim().split(' ');
+    const runbook = input[0];
+    const params = input.splice(1);
+    
+    const channel = `#${body.channel_name}`;
+    const requestedBy = body.user_name;
+
+    const jobId = uuid.v4();
+    const request = {
+      properties: {
+        runbook: {
+          name
+        },
+        parameters: {
+          context: JSON.stringify(params),
+          MicrosoftApplicationManagementStartedBy: "\"azure-runslash\"",
+          MicrosoftApplicationManagementRequestedBy: `\"${requestedBy}\"`
+        }
+      },
+      tags: {}
+    };
+
+    return queue.send({ posted: new Date(), jobId: jobId, channel: channel, requestedBy: requestedBy, runbook: runbook })
+      .then(() => {
+        return armClient.provider(nconf.get('AUTOMATION_RESOURCE_GROUP'), 'Microsoft.Automation')
+          .put(`/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/Jobs/${jobId}`, { 'api-version': '2015-10-31' }, request)})
+      .then((rbdata) => {
+        const subscriptionsUrl = 'https://portal.azure.com/#resource/subscriptions';
+        const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('AUTOMATION_RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${runbook}`;
+
+        context.log('check return value after posting runbook: ' + JSON.stringify(rbdata));
+        
+        context.res = {
+          response_type: 'in_channel',
+          attachments: [{
+            color: '#00BCF2',
+            mrkdwn_in: ['text'],
+            fallback: `Azure Automation Runbook ${runbook} has been queued.`,
+            text: `Azure Automation Runbook *${runbook}* has been queued (<${runbookUrl}|Open Runbook>).`,
+            fields: [
+              { 'title': 'Automation Account', 'value': nconf.get('AUTOMATION_ACCOUNT'), 'short': true },
+              { 'title': 'Runbook', 'value': runbook, 'short': true },
+              { 'title': 'Job ID', 'value': jobId, 'short': true },
+              { 'title': 'Parameters', 'value': `"${params.join('", "')}"`, 'short': true },
+            ],
+          }]
+        };
+        })
+      .catch((err) => {
+        context.log('Caught a error: ' + err);
+        context.res = {
+          response_type: 'in_channel',
+          attachments: [{
+            color: '#F35A00',
+            fallback: `Unable to execute Azure Automation Runbook: ${err.message || err.details && err.details.message || err.status}.`,
+            text: `Unable to execute Azure Automation Runbook: ${err.message || err.details && err.details.message || err.status}.`
+          }]
+        };
+      });
   }
-  
-  // Collect information.
-  const input = body.text.trim().split(' ');
-  const runbook = input[0];
-  const params = input.splice(1);
-  
-  // Execute the runbook.
-  executeRunbook(`#${body.channel_name}`, body.user_name, runbook, params)
-    .then((rbdata) => {
-      const subscriptionsUrl = 'https://portal.azure.com/#resource/subscriptions';
-      const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('AUTOMATION_RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${runbook}`;
 
-      context.log('check return value after posting runbook: ' + JSON.stringify(rbdata));
-      
-      context.res = {
-        response_type: 'in_channel',
-        attachments: [{
-          color: '#00BCF2',
-          mrkdwn_in: ['text'],
-          fallback: `Azure Automation Runbook ${runbook} has been queued.`,
-          text: `Azure Automation Runbook *${runbook}* has been queued (<${runbookUrl}|Open Runbook>).`,
-          fields: [
-            { 'title': 'Automation Account', 'value': nconf.get('AUTOMATION_ACCOUNT'), 'short': true },
-            { 'title': 'Runbook', 'value': runbook, 'short': true },
-            { 'title': 'Job ID', 'value': rbdata.body.properties.jobId, 'short': true },
-            { 'title': 'Parameters', 'value': `"${params.join('", "')}"`, 'short': true },
-          ],
-        }]
-      };
-
-      context.log('In executeRunbook: ' + JSON.stringify(context.res));
-
-    })
-    .catch((err) => {
-      if (err) {
-//        logger.error(err);  
-          context.log('Caught an err in executeRunbook: ' + err);
-      }
-      
-      context.res = {
-        response_type: 'in_channel',
-        attachments: [{
-          color: '#F35A00',
-          fallback: `Unable to execute Azure Automation Runbook: ${err.message || err.details && err.details.message || err.status}.`,
-          text: `Unable to execute Azure Automation Runbook: ${err.message || err.details && err.details.message || err.status}.`
-        }]
-      };
-    });
-
-  context.log('Before context.done: ' + context.res);
   context.done();
 
 };
