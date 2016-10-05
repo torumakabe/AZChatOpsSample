@@ -6,14 +6,27 @@ const nconf = require('nconf');
 const uuid = require('node-uuid');
 const qs = require('querystring');
 
-// Initialize configuration.
-nconf.argv()
-  .env();
-
 //Main flow
 module.exports = function (context, data) {
 
   context.log('receive a request.');
+
+  nconf.argv().env();
+
+  const armClient = ArmClient({ 
+    subscriptionId: nconf.get('SUBSCRIPTION_ID'),
+    auth: ArmClient.clientCredentials({
+      tenantId: nconf.get('TENANT_ID'), 
+      clientId: nconf.get('CLIENT_ID'),
+      clientSecret: nconf.get('CLIENT_SECRET')
+      })
+  });
+ 
+  const queue = Queue(nconf.get('STORAGE_ACCOUNT'), nconf.get('STORAGE_ACCOUNT_KEY'), 'azure-runslash-jobs');
+  queue.create()
+    .catch((err) => { 
+      context.log(err);
+    });
  
   const body = qs.parse(data);
 
@@ -81,7 +94,7 @@ module.exports = function (context, data) {
         };
         })
       .catch((err) => {
-        context.log('Caught a error: ' + JSON.stringify(err));
+        context.log('Error: ' + JSON.stringify(err));
         context.res = {
           response_type: 'in_channel',
           attachments: [{
@@ -203,18 +216,3 @@ const Queue = (accountName, accountKey, queueName) => {
   };
   return client;
 };
-
-const queue = Queue(nconf.get('STORAGE_ACCOUNT'), nconf.get('STORAGE_ACCOUNT_KEY'), 'azure-runslash-jobs');
-queue.create()
-  .catch((err) => { 
-    context.log(err);
-  });
-
-const armClient = ArmClient({ 
-  subscriptionId: nconf.get('SUBSCRIPTION_ID'),
-  auth: ArmClient.clientCredentials({
-    tenantId: nconf.get('TENANT_ID'), 
-    clientId: nconf.get('CLIENT_ID'),
-    clientSecret: nconf.get('CLIENT_SECRET')
-  })
-});
