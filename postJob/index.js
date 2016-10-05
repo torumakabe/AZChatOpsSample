@@ -9,13 +9,6 @@ const qs = require('querystring');
 // Initialize configuration.
 nconf.argv()
   .env();
-//  .file({ file: '../config.json' });
-
-// Runbook queue.
-queue.create()
-  .catch((err) => { 
-    context.log(err);
-  });
 
 //Main flow
 module.exports = function (context, data) {
@@ -212,6 +205,10 @@ const Queue = (accountName, accountKey, queueName) => {
 };
 
 const queue = Queue(nconf.get('STORAGE_ACCOUNT'), nconf.get('STORAGE_ACCOUNT_KEY'), 'azure-runslash-jobs');
+queue.create()
+  .catch((err) => { 
+    context.log(err);
+  });
 
 const armClient = ArmClient({ 
   subscriptionId: nconf.get('SUBSCRIPTION_ID'),
