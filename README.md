@@ -6,3 +6,4 @@
 
 * Dynamic plan -> Classic plan (to avaid Slack timeout in an initial call)
 * Sample ARM template parameter file
+* Docs
