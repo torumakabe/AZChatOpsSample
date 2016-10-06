@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "armclient": "^1.1.0",
+    "async": "^1.5.2",
     "azure-storage": "^0.8.0",
     "nconf": "^0.8.4",
     "node-slackr": "^0.1.2"

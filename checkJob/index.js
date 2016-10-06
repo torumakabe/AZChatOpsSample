@@ -1,4 +1,5 @@
 const ArmClient = require('armclient');
+const async = require('async');
 const azureStorage = require('azure-storage');
 const nconf = require('nconf');
 const Slack = require('node-slackr');
