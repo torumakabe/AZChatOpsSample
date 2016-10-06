@@ -61,7 +61,7 @@ module.exports = (context, myTimer) => {
           .catch(cb);
       })
       .catch((err) => {
-        context.log(err);
+        context.log('Error occured: ' + err);
         cb();
       });
   }; 
@@ -112,7 +112,7 @@ module.exports = (context, myTimer) => {
 
     slack.notify(msg, (err, result) => {
       if (err) {
-        context.log(err);
+        context.log('Error occured: ' + err);
       }
     });
   };
@@ -121,14 +121,14 @@ module.exports = (context, myTimer) => {
   queue.create()
     .then(() => {
       context.log(`Listening for messages in ${nconf.get('STORAGE_ACCOUNT')}/azure-runslash-jobs.`);
-      return queue.process(worker);
+      queue.process(worker);
+      context.log('Check done.');
+      context.done();
     })
     .catch((err) => { 
-      context.log(err);
+      context.log('Error occured: ' + err);
+      context.done();
     });
-
-  context.log('Check done.');
-  context.done();
 
 };
 

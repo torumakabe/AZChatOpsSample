@@ -17,5 +17,9 @@
     "azure-storage": "^0.8.0",
     "nconf": "^0.8.4",
     "node-slackr": "^0.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ToruMakabe/AZChatOpsSample.git"
   }
 }

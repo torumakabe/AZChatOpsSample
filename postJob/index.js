@@ -1,7 +1,6 @@
 const ArmClient = require('armclient');
 const async = require('async');
 const azureStorage = require('azure-storage');
-const Promise = require('bluebird');
 const nconf = require('nconf');
 const uuid = require('node-uuid');
 const qs = require('querystring');
@@ -23,7 +22,7 @@ module.exports = (context, data) => {
   const queue = Queue(nconf.get('STORAGE_ACCOUNT'), nconf.get('STORAGE_ACCOUNT_KEY'), 'azure-runslash-jobs');
   queue.create()
     .catch((err) => { 
-      context.log(err);
+      context.log('Error occured: ' + err);
     });
  
   const body = qs.parse(data);
@@ -72,9 +71,7 @@ module.exports = (context, data) => {
       .then((rbdata) => {
         const subscriptionsUrl = 'https://portal.azure.com/#resource/subscriptions';
         const runbookUrl = `${subscriptionsUrl}/${nconf.get('SUBSCRIPTION_ID')}/resourceGroups/${nconf.get('AUTOMATION_RESOURCE_GROUP')}/providers/Microsoft.Automation/automationAccounts/${nconf.get('AUTOMATION_ACCOUNT')}/runbooks/${name}`;
-
-        context.log('check return value after posting runbook: ' + JSON.stringify(rbdata));
-        
+       
         context.res = {
           response_type: 'in_channel',
           attachments: [{
@@ -92,7 +89,7 @@ module.exports = (context, data) => {
         };
         })
       .catch((err) => {
-        context.log('Error: ' + JSON.stringify(err));
+        context.log('Error occured: ' + JSON.stringify(err));
         context.res = {
           response_type: 'in_channel',
           attachments: [{

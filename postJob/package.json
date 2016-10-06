@@ -15,8 +15,11 @@
     "armclient": "^1.1.0",
     "async": "^1.5.2",
     "azure-storage": "^0.8.0",
-    "bluebird": "^3.2.2",
     "nconf": "^0.8.4",
     "node-uuid": "^1.4.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ToruMakabe/AZChatOpsSample.git"
   }
 }
