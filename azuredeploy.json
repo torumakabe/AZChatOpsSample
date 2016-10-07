@@ -90,7 +90,7 @@
       }
     },
     "SLACK_SLASHCMD_TOKEN" : {
-      "type": "string",
+      "type": "securestring",
       "metadata": {
         "description": "The Slack slash command token to auth ping function."
       }
