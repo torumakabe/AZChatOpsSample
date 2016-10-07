@@ -61,7 +61,7 @@ module.exports = (context, myTimer) => {
           .catch(cb);
       })
       .catch((err) => {
-        context.log('Error occured: ' + err);
+        context.log('Error occured: ' + JSON.stringify(err));
         cb();
       });
   }; 
@@ -112,7 +112,7 @@ module.exports = (context, myTimer) => {
 
     slack.notify(msg, (err, result) => {
       if (err) {
-        context.log('Error occured: ' + err);
+        context.log('Error occured: ' + JSON.stringify(err));
       }
     });
   };
@@ -126,7 +126,7 @@ module.exports = (context, myTimer) => {
       context.done();
     })
     .catch((err) => { 
-      context.log('Error occured: ' + err);
+      context.log('Error occured: ' + JSON.stringify(err));
       context.done();
     });
 
