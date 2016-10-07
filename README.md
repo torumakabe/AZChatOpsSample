@@ -4,7 +4,6 @@
 
 ## ToDo
 
-* Test checkJob function
-* Dynamic plan -> Classic plan (to avaid Slack timeout in an initial call)
+* Add ping function (to avaid Slack timeout in an initial call or cold restart to postJob)
 * Sample ARM template parameter file
 * Docs
