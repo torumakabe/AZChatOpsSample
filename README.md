@@ -1,9 +1,14 @@
-# (Work in progress) ChatOps on Azure
+# ChatOps on Azure
 
 [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FToruMakabe%2FAZChatOpsSample%2Fmaster%2Fazuredeploy.json)
 
-## ToDo
+## Document
 
-* Add ping function (to avaid Slack timeout in an initial call or cold restart to postJob)
-* Sample ARM template parameter file
-* Docs
+http://torumakabe.github.io/post/azure_chatops_onfunctions/
+(Sorry in Japanese only)
+
+## Special Thanks
+
+@sandrinodimattia
+
+[azure-runslash](https://github.com/sandrinodimattia/azure-runslash)
