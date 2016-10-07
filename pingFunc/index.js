@@ -11,7 +11,16 @@ module.exports = (context, myTimer) => {
   const options = {
       url: urlString,
       method: 'POST',
-      form: {'token': nconf.get('SLACK_SLASHCMD_TOKEN'), 'text': 'ping'}
+      form: {'token': nconf.get('SLACK_SLASHCMD_TOKEN'),
+             'team_id': 'dummy',
+             'team_domain': 'dummy',
+             'channel_id': 'dummy',
+             'channel_nam': 'dummy',
+             'user_id': 'dummy',
+             'command': 'dummy',
+             'text': 'ping',
+             'response_ur': 'dummy'
+            }
   }
 
   request(options, function (error, response, body) {
