@@ -39,7 +39,7 @@ module.exports = (context, data) => {
       }]
     };
 
-  } else if (!body.text == 'ping') {
+  } else if (body.text == 'ping') {
       context.res = { status: 200, body: 'Pong' };
   } else {   
 

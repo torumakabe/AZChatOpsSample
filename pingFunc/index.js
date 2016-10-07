@@ -25,12 +25,12 @@ module.exports = (context, myTimer) => {
 
   request(options, function (error, response, body) {
       if (!error && response.statusCode == 200) {
-          context.log('Pong');
+        context.log('Pong');
+        context.done();
       } else {
-          context.log('Error occured: ' + body);
+        context.log('Error occured: ' + body);
+        context.done();
       }
   });
-
-  context.done();
 
 };
