@@ -89,6 +89,12 @@
         "description": "The name of the Automation account in which you want to execute Runbooks."
       }
     },
+    "SLACK_SLASHCMD_TOKEN" : {
+      "type": "string",
+      "metadata": {
+        "description": "The Slack slash command token to auth ping function."
+      }
+    },
     "SLACK_CHANNEL" : {
       "type": "string",
       "metadata": {
@@ -164,6 +170,7 @@
           "properties": {
             "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2015-05-01-preview').key1,';')]", 
             "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2015-05-01-preview').key1,';')]",
+            "FUNCTION_APP_NAME": "[parameters('functionAppName')]",
             "SUBSCRIPTION_ID": "[parameters('SUBSCRIPTION_ID')]",
             "TENANT_ID": "[parameters('TENANT_ID')]",
             "CLIENT_ID": "[parameters('CLIENT_ID')]",
@@ -172,6 +179,7 @@
             "AUTOMATION_ACCOUNT": "[parameters('AUTOMATION_ACCOUNT')]",
             "STORAGE_ACCOUNT": "[parameters('storageName')]",
             "STORAGE_ACCOUNT_KEY": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2015-06-15').key1]",
+            "SLACK_SLASHCMD_TOKEN": "[parameters('SLACK_SLASHCMD_TOKEN')]",
             "SLACK_CHANNEL": "[parameters('SLACK_CHANNEL')]",
             "SLACK_INCOMING_WEBHOOK_URL": "[parameters('SLACK_INCOMING_WEBHOOK_URL')]",
             "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",

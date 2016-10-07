@@ -1,7 +1,7 @@
 {
-  "name": "azure-runslash-postjob",
+  "name": "azure-runslash-pingfunction",
   "version": "1.0.0",
-  "description": "A chatops tool that allows you to run Azure Automation Runbooks from Slack.",
+  "description": "Pinging to httptrigger function to avold being cold state",
   "main": "index.js",
   "engines": {
     "node": "6.5.0"
@@ -9,11 +9,8 @@
   "author": "Toru Makabe",
   "license": "MIT",
   "dependencies": {
-    "armclient": "^1.1.0",
-    "async": "^1.5.2",
-    "azure-storage": "^0.8.0",
     "nconf": "^0.8.4",
-    "node-uuid": "^1.4.7"
+    "request": "^2.75.0"
   },
   "repository": {
     "type": "git",

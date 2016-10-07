@@ -1,0 +1,54 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "functionAppName": {
+      "value": "yourchatops"
+    },
+    "appServicePlanName": {
+      "value": "yourchatopsplan"
+    },
+    "siteLocation": {
+      "value": "japaneast"
+    },
+    "storageName":{
+      "value":"yourchatops01"
+    },
+    "storageAccountType":{
+      "value":"Standard_LRS"
+    },
+    "repoURL": {
+      "value": "https://github.com/yourgithubaccount/AZChatOpsSample.git"
+    },
+    "branch": {
+      "value": "master"
+    },
+    "SUBSCRIPTION_ID" : {
+      "value": "your-sub-id"
+    },
+    "TENANT_ID" : {
+      "value": "your-tenant-id"
+    },
+    "CLIENT_ID" : {
+      "value": "your-client-id-of-serviceprincipal"
+    },
+    "CLIENT_SECRET" : {
+      "value": "your-client-secret-of-serviceprincipal"
+    },
+    "AUTOMATION_RESOURCE_GROUP" : {
+      "value": "your-azureautomation-resource-group"
+    },
+    "AUTOMATION_ACCOUNT" : {
+      "value": "your-automaton-account"
+    },
+    "SLACK_SLASHCMD_TOKEN" :{
+      "value": "your-slack-slashcommand-token"
+    },
+    "SLACK_CHANNEL" : {
+      "value": "ops"
+    },
+    "SLACK_INCOMING_WEBHOOK_URL" : {
+      "value": "https://hooks.slack.com/services/yourincomingwebhookurl"
+    }
+  }
+}

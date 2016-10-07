@@ -3,13 +3,10 @@
   "version": "1.0.0",
   "description": "A chatops tool that allows you to get notified of the progress.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "engines": {
     "node": "6.5.0"
   },
-  "author": "",
+  "author": "Toru Makabe",
   "license": "MIT",
   "dependencies": {
     "armclient": "^1.1.0",
